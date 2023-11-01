@@ -5,153 +5,15 @@ import org.apache.spark.graphx._
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD
 import org.apache.spark.SparkContext
-
 import scala.jdk.CollectionConverters.CollectionHasAsScala
-
 import org.apache.spark.sql.SparkSession
 import java.io.PrintWriter
-
 import org.apache.spark.sql.SparkSession
 import java.io.PrintWriter
-
-/*
-object RandomWalkApp {
-  def main(args: Array[String]): Unit = {
-    // Initialize Spark
-    val spark: SparkSession = SparkSession.builder()
-      .appName("RandomWalk")
-      .master("local")
-      .getOrCreate()
-
-    // Load your perturbed graph
-    val perturbedGraph: Option[NetGraph] = NetGraph.load("NetGameSimNetGraph_26-10-23-23-39-25.ngs.perturbed", "/Users/muzza/Desktop/projectTwo/TO_USE/")
-    val netPerturbedGraph: NetGraph = perturbedGraph.get
-
-    // Maximum number of steps for the random walk
-    val maxSteps = 10000
-
-    // Perform the random walk
-    val walkResult = randomWalk(netPerturbedGraph, maxSteps)
-
-    // Store results in a file
-    val outputPath = "/Users/muzza/Desktop/professorFiles/output/file.txt"
-    val writer = new PrintWriter(outputPath)
-    walkResult.foreach(node => writer.println(node))
-    writer.close()
-
-    // Stop Spark
-    spark.stop()
-  }
-
-  def randomWalk(graph: NetGraph, maxSteps: Int): List[NodeObject] = {
-    var currentNode: NodeObject = graph.initState
-    var steps: Int = 0
-    var path: List[NodeObject] = List(currentNode)
-    var visited: Set[NodeObject] = Set(currentNode)
-
-    while (steps < maxSteps && visited.size < graph.totalNodes) {
-      graph.getRandomConnectedNode(currentNode) match {
-        case Some((nextNode, _)) if !visited.contains(nextNode) =>
-          currentNode = nextNode
-          path = path :+ currentNode
-          visited += currentNode
-          steps += 1
-        case _ =>
-          steps = maxSteps
-      }
-    }
-
-    path
-  }
-}
-*/
-
 import NetGraphAlgebraDefs.{NetGraph, NodeObject}
 import org.apache.spark.sql.SparkSession
 import java.io.PrintWriter
 import scala.collection.parallel.CollectionConverters._
-
-/*
-object RandomWalkSparkApp {
-
-  def main(args: Array[String]): Unit = {
-    // Initialize Spark
-    val spark: SparkSession = SparkSession.builder()
-      .appName("RandomWalkSpark")
-      .master("local")
-      .getOrCreate()
-
-    // Load your perturbed graph
-    val perturbedGraph: Option[NetGraph] = NetGraph.load("NetGameSimNetGraph_26-10-23-23-39-25.ngs.perturbed", "/Users/muzza/Desktop/projectTwo/TO_USE/")
-    val netPerturbedGraph: NetGraph = perturbedGraph.get
-
-    // Number of random walks to perform
-    val numRandomWalks = 300
-
-    // Maximum number of steps for each random walk
-    val maxSteps = 1000
-
-    // Start multiple random walks concurrently
-    val walkResults = (1 to numRandomWalks).toList.par.map { _ =>
-      val randomNode = getRandomNode(netPerturbedGraph)
-      randomWalk(netPerturbedGraph, randomNode, maxSteps)
-    }.toList
-
-    // Combine results and store them in the same output file
-
-//    val outputPath = "/Users/muzza/Desktop/professorFiles/output/file.txt"
-//    val writer = new PrintWriter(outputPath)
-//    walkResults.flatten.foreach(node => writer.println(node))
-//    walkResults.flatten.foreach(node => println(s"Node: $node"))
-//    println()
-//    writer.close()
-
-    val outputPath = "/Users/muzza/Desktop/professorFiles/output/file.txt"
-    val writer = new PrintWriter(outputPath)
-
-    // Add the header
-    val header = "id, children, props, currentDepth, propValueRange, MaxDepth, MaxBranchingFactor, MaxProperties, storedValue, valuableData"
-    writer.println(header)
-
-    walkResults.flatten.foreach { node =>
-      val nodeStr = node.toString
-      val content = nodeStr.substring(nodeStr.indexOf("(") + 1, nodeStr.lastIndexOf(")"))
-      writer.println(content)
-    }
-    writer.close()
-
-
-    // Stop Spark
-    spark.stop()
-  }
-
-  def getRandomNode(graph: NetGraph): NodeObject = {
-    val nodesList = graph.sm.nodes().asScala.toList
-    val randomIndex = scala.util.Random.nextInt(nodesList.length)
-    nodesList(randomIndex)
-  }
-
-  def randomWalk(graph: NetGraph, startNode: NodeObject, maxSteps: Int): List[NodeObject] = {
-    var currentNode: NodeObject = startNode
-    var steps: Int = 0
-    var path: List[NodeObject] = List(currentNode)
-
-    while (steps < maxSteps) {
-      graph.getRandomConnectedNode(currentNode) match {
-        case Some((nextNode, _)) =>
-          currentNode = nextNode
-          path = path :+ currentNode
-          steps += 1
-        case None =>
-          steps = maxSteps
-      }
-    }
-
-    path
-  }
-}
-*/
-
 import org.apache.spark.sql.SparkSession
 
 
@@ -174,17 +36,23 @@ import org.apache.spark.sql.SparkSession
 
 /* 4. The results are saved to the specified output directory in text files. */
 
+// Even though professor has his own Random Walk function in NetGameAlgebraDefs which I noticed very late.
+// I created my own as it was giving me trouble accessing variables outside of the random walk function.
 
 object RandomWalkSparkApp {
 
   def main(args: Array[String]): Unit = {
-    // Initialize Spark
+
+    // Initialize Spark and adding master URL
+    logger.info("Creating a Spark Session Object in Apache Spark")
     val spark: SparkSession = SparkSession.builder()
       .appName("RandomWalkSpark")
       .master("local")
       .getOrCreate()
 
-    // Load your perturbed graph
+
+    // Load the perturbed graph and collect its data such as nodes
+    logger.info("Loading in the perturbed graph")
     val perturbedGraph: Option[NetGraph] = NetGraph.load("NetGameSimNetGraph_26-10-23-23-39-25.ngs.perturbed", "/Users/muzza/Desktop/projectTwo/TO_USE/")
     val netPerturbedGraph: NetGraph = perturbedGraph.get
 
@@ -195,21 +63,32 @@ object RandomWalkSparkApp {
     val maxSteps = 1000
 
     // Start multiple random walks concurrently
+    logger.info("Starting Random Walk")
     val walkResults = (1 to numRandomWalks).toList.par.map { _ =>
       val randomNode = getRandomNode(netPerturbedGraph)
       randomWalk(netPerturbedGraph, randomNode, maxSteps)
     }.toList
+    logger.info("Random Walk Completed")
 
 
     // Save the results to output files
+    logger.info("Saving Results")
     val outputPath = "/Users/muzza/Desktop/professorFiles/output" // Specify the output directory
+
+    logger.info("Converting walkResults into a parallelized RDD and formatting the results as Strings")
     val rdd = spark.sparkContext.parallelize(walkResults.map(_.map(_.toString.stripPrefix("NodeObject(").stripSuffix(")")).mkString("\n")))
+
+    logger.info("Saving the RDD as text file")
     rdd.saveAsTextFile(outputPath)
 
-    // Stop Spark
+    logger.info("Stopping Spark to Release Resources")
     spark.stop()
+    logger.info("Successful Stop")
   }
 
+
+  // This function is created to grab a random node to begin the random walk
+  // It takes in
   def getRandomNode(graph: NetGraph): NodeObject = {
     val nodesList = graph.sm.nodes().asScala.toList
     val randomIndex = scala.util.Random.nextInt(nodesList.length)
@@ -217,21 +96,30 @@ object RandomWalkSparkApp {
   }
 
   def randomWalk(graph: NetGraph, startNode: NodeObject, maxSteps: Int): List[NodeObject] = {
+
+    logger.info("Beginning the Random Walk starting from randomly chosen node")
+
+    // We initialize the current node, step count, and path list
     var currentNode: NodeObject = startNode
     var steps: Int = 0
     var path: List[NodeObject] = List(currentNode)
 
+    // Continue the walk until the maximum number of steps is reached
     while (steps < maxSteps) {
+      // Get a random connected node from the graph
       graph.getRandomConnectedNode(currentNode) match {
         case Some((nextNode, _)) =>
+          // If a connected node is found, update the current node, path, and step count
           currentNode = nextNode
           path = path :+ currentNode
           steps += 1
         case None =>
+          // If no connected node is found, stop the walk by setting steps to maxSteps
           steps = maxSteps
       }
     }
 
+    // Return the path taken during the random walk
     path
   }
 }
