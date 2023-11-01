@@ -95,35 +95,34 @@ object RandomWalkSparkApp {
     nodesList(randomIndex)
   }
 
+  // This function performs a random walk on the perturbed graph
+  // It takes Perturbed Graph, starting node and
   def randomWalk(graph: NetGraph, startNode: NodeObject, maxSteps: Int): List[NodeObject] = {
 
     logger.info("Beginning the Random Walk starting from randomly chosen node")
 
-    // We initialize the current node, step count, and path list
+    // Initializing the current node, step count, and path list
     var currentNode: NodeObject = startNode
     var steps: Int = 0
     var path: List[NodeObject] = List(currentNode)
 
-    // Continue the walk until the maximum number of steps is reached
+    // Continuing the walk until the maximum number of steps is reached
     while (steps < maxSteps) {
       // Get a random connected node from the graph
       graph.getRandomConnectedNode(currentNode) match {
         case Some((nextNode, _)) =>
-          // If a connected node is found, update the current node, path, and step count
+          // If a connected node is found, we update the current node, path, and step count
           currentNode = nextNode
           path = path :+ currentNode
           steps += 1
         case None =>
-          // If no connected node is found, stop the walk by setting steps to maxSteps
+          // If no connected node is found, then we stop the walk by setting steps to maxSteps
           steps = maxSteps
       }
     }
 
-    // Return the path taken during the random walk
+    // Returning the path taken during the random walk
     path
   }
+
 }
-
-
-
-

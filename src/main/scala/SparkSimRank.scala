@@ -16,14 +16,12 @@ object SparkSimRank {
     // Load data from a CSV file as an RDD
     val data = sc.textFile("/Users/muzza/Desktop/professorFiles/combinedCsv/combined.csv")
 
+    // Algorithm for Sim Rank has been taken from Homework 1
     // Sim Rank algorithm compares the Nodes properties of original with the perturbed
     // All properties are used excluding the Node "ID"
     // It then generates a score determining whether it was removed, modified, or added based on the threshold.
     // The threshold for match is set to 0.9, anything above is modified, and below is considered removed
     def calculateSimRank(csvLine: String): Double = {
-
-      println(s"Line: $csvLine")
-      println
 
       // Skip the header line
       if (csvLine.startsWith("P.Id")) {
@@ -45,7 +43,7 @@ object SparkSimRank {
       val perturbedMaxBranchingFactor = fields(6).trim.toDouble
       val perturbedMaxProperties = fields(7).trim.toDouble
       val perturbedStoredValue = fields(8).trim.toDouble
-      val perturbedValuableData: Boolean = fields(9).trim.toBoolean
+      //val perturbedValuableData: Boolean = fields(9).trim.toBoolean
 
 
       // val originalId = fields(0).trim.toDouble
@@ -57,7 +55,7 @@ object SparkSimRank {
       val originalMaxBranchingFactor = fields(16).trim.toDouble
       val originalMaxProperties = fields(17).trim.toDouble
       val originalStoredValue = fields(18).trim.toDouble
-      val originalValuableData: Boolean = fields(9).trim.toBoolean
+      //val originalValuableData: Boolean = fields(9).trim.toBoolean
 
 
       if (originalChildren == perturbedChildren) {
@@ -160,12 +158,6 @@ object SparkSimRank {
 
     // Categorize data based on score
     val below_0_9 = scoredData.filter { case (score, _) => score < 0.9 }
-
-    // Save categorized data with messages
-//    below_0_9.map { case (score, line) => formatData(score, "This node was removed\nThis node was taken out") }
-//      .saveAsTextFile("/Users/muzza/Desktop/professorFiles/simRankScore/below_0.9")
-
-
     val equal_to_0_9 = scoredData.filter { case (score, _) => score == 0.9 }
     val above_0_9 = scoredData.filter { case (score, _) => score > 0.9 }
 

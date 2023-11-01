@@ -7,6 +7,7 @@ import scala.io.Source
 
 object storingFiles {
 
+  // This file store nodes and the properties to CSV for Original Graph
   def writeNodesToCSV(outputPath: String, nodes: java.util.Set[NodeObject]): Unit = {
     val writer = new PrintWriter(outputPath)
 
@@ -23,15 +24,6 @@ object storingFiles {
   }
 
   //--------------------------------------------------------------------------------
-
-  // Function to compare lines from perturbed.txt with lines from original.txt
-  def compareAndWriteToCSV(perturbedLine: String, originalLines: List[String], writer: PrintWriter): Unit = {
-    originalLines.foreach { originalLine =>
-      // Combine the lines and write to CSV
-      val combinedLine = s"$perturbedLine, $originalLine"
-      writer.println(combinedLine)
-    }
-  }
 
 
   // Function to compare lines from perturbed file with lines from original file and write to CSV
