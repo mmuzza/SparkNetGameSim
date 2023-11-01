@@ -1,4 +1,3 @@
-import GraphLoaderApp.logger
 import NetGraphAlgebraDefs.NetGraph.logger
 import org.json4s.JsonDSL.int2jvalue
 
