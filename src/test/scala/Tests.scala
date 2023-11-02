@@ -24,13 +24,13 @@ class Tests extends AnyFunSuite with Matchers {
 //  }
 
 
+
   test("calculateSimRank returns the expected score for equal input values") {
     val csvLine = "1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0"
     val score = SparkSimRank.calculateSimRank(csvLine)
     score shouldEqual 0.9 // Expected score for equal input values
     info("Test passed: calculateSimRank returns the expected score for equal input values")
   }
-
 
   test("checkAuthenticity should return a valid output message") {
     val csvLine = "0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,true,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18,0.19,true"

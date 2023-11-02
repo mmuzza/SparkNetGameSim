@@ -67,6 +67,9 @@ object Main {
     SparkAttackerAuthenticate.executeCalculatingStats(calculateStatsInputFile, statsOutput)
 
 
+    // End of program
+
+
   }
 
 }
