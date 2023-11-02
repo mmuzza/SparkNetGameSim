@@ -41,7 +41,7 @@ import org.apache.spark.sql.SparkSession
 
 object RandomWalkSparkApp {
 
-  def main(args: Array[String]): Unit = {
+  def executeRandomWalk(args: String*): Unit = {
 
     // Initialize Spark and adding master URL
     logger.info("Creating a Spark Session Object in Apache Spark")
@@ -52,9 +52,14 @@ object RandomWalkSparkApp {
 
 
     // Load the perturbed graph and collect its data such as nodes
+    // This is to run locally
     logger.info("Loading in the perturbed graph")
-    val perturbedGraph: Option[NetGraph] = NetGraph.load("NetGameSimNetGraph_26-10-23-23-39-25.ngs.perturbed", "/Users/muzza/Desktop/projectTwo/TO_USE/")
+    val perturbedGraph: Option[NetGraph] = NetGraph.load(args(0), args(1))
     val netPerturbedGraph: NetGraph = perturbedGraph.get
+
+//    Uncomment the line below for AWS to read the input from s3 bucket
+//    val inputPath = "s3://your-s3-bucket/input/textfile.txt"
+
 
     // Number of random walks to perform
     val numRandomWalks = 300
@@ -65,15 +70,29 @@ object RandomWalkSparkApp {
     // Start multiple random walks concurrently
     logger.info("Starting Random Walk")
     val walkResults = (1 to numRandomWalks).toList.par.map { _ =>
+
+      // comment the two lines below for AWS purposes, this is to only execute for local
       val randomNode = getRandomNode(netPerturbedGraph)
       randomWalk(netPerturbedGraph, randomNode, maxSteps)
+
+
+//      For AWS: Uncomment the two lines below:
+//      val randomNode = getRandomNode(inputPath)
+//      randomWalk(inputPath, randomNode, maxSteps)
+
     }.toList
+
     logger.info("Random Walk Completed")
 
 
     // Save the results to output files
     logger.info("Saving Results")
-    val outputPath = "/Users/muzza/Desktop/professorFiles/output" // Specify the output directory
+
+    // Comment out this line when running on AWS, this is only to run on local
+    val outputPath = args(2) // Specify the output directory
+
+//    Uncomment the line below for AWS to write the output to s3 bucket
+//    val outputPath = "s3://your-s3-bucket/output"
 
     logger.info("Converting walkResults into a parallelized RDD and formatting the results as Strings")
     val rdd = spark.sparkContext.parallelize(walkResults.map(_.map(_.toString.stripPrefix("NodeObject(").stripSuffix(")")).mkString("\n")))

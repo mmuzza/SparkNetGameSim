@@ -54,11 +54,12 @@ object storingFiles {
   }
 
 
-  def main(args: Array[String]): Unit = {
+  def callToExecute(args: String*): Unit = {
 
     // Here we load in the Original Ngs Graph
     logger.info("Loading in Original Graph ngs file using NetGraph.load function:")
-    val originalGraph: Option[NetGraph] = NetGraph.load("NetGameSimNetGraph_26-10-23-23-39-25.ngs", "/Users/muzza/Desktop/projectTwo/TO_USE/")
+//    val originalGraph: Option[NetGraph] = NetGraph.load("NetGameSimNetGraph_26-10-23-23-39-25.ngs", "/Users/muzza/Desktop/projectTwo/TO_USE/")
+val originalGraph: Option[NetGraph] = NetGraph.load(args(0), args(1))
     logger.info("Original Graph was successfully loaded")
 
     // Getting information of Original Graph
@@ -76,8 +77,9 @@ object storingFiles {
     // Creating Csv file to store all of the original nodes in a csv file
     // This will be used in creating Cartesian Product of original X perturbed
     logger.info("Storing Original Graph Nodes in a CSV file")
-    val originalFilePath = "/Users/muzza/Desktop/professorFiles/originalCsv/file.txt"
-    writeNodesToCSV(originalFilePath, originalGraphNodes)
+//    val originalFilePath = "/Users/muzza/Desktop/professorFiles/originalCsv/file.txt"
+//    writeNodesToCSV(originalFilePath, originalGraphNodes)
+    writeNodesToCSV(args(2), originalGraphNodes)
     logger.info("Original Graph Nodes were successfully stored in a Csv File")
 
 
@@ -88,9 +90,8 @@ object storingFiles {
     logger.info("Creating Csv File to store each Perturbed Node X Original Nodes in a CSV File")
     val perturbedFilePath = "/Users/muzza/Desktop/professorFiles/output/part-00000"
     val combinedFilePath = "/Users/muzza/Desktop/professorFiles/combinedCsv/combined.csv"
-    combineAndWriteToCSV(perturbedFilePath, originalFilePath, combinedFilePath)
+    combineAndWriteToCSV(args(3), args(2), args(4))
     logger.info("Combined Csv of Perturbed X Original Graphs was Successfully created")
-
 
   }
 }
