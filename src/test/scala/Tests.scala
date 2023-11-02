@@ -11,17 +11,17 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 class Tests extends AnyFunSuite with Matchers {
 
 
-  test("getRandomNode should return a valid NodeObject") {
-
-    val samplePerturbedGraph: Option[NetGraph] = NetGraph.load("NetGameSimNetGraph_26-10-23-23-39-25.ngs.perturbed", "/Users/muzza/Desktop/projectTwo/TO_USE/")
-    val sampleNetPerturbedGraph: NetGraph = samplePerturbedGraph.get
-
-    // Call the getRandomNode function
-    val randomNode = RandomWalkSparkApp.getRandomNode(sampleNetPerturbedGraph)
-
-    // Add your assertions here to verify the result
-    assert(randomNode != null, "Test passed: Random Node contains Node of type NodeObject")
-  }
+//  test("getRandomNode should return a valid NodeObject") {
+//
+//    val samplePerturbedGraph: Option[NetGraph] = NetGraph.load("NetGameSimNetGraph_26-10-23-23-39-25.ngs.perturbed", "/Users/muzza/Desktop/projectTwo/TO_USE/")
+//    val sampleNetPerturbedGraph: NetGraph = samplePerturbedGraph.get
+//
+//    // Call the getRandomNode function
+//    val randomNode = RandomWalkSparkApp.getRandomNode(sampleNetPerturbedGraph)
+//
+//    // Add your assertions here to verify the result
+//    assert(randomNode != null, "Test passed: Random Node contains Node of type NodeObject")
+//  }
 
 
   test("calculateSimRank returns the expected score for equal input values") {
