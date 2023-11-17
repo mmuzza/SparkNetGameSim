@@ -1,9 +1,8 @@
 Student: Muhammad Muzzammil
 
-=> No AWS deployment/Video = -0.5%
 => Hardcoded Variables(15) = -1.5%
 
-Good solution. I would've liked to see you use .conf files for all the variables since these are easy points that you should be getting with all the work you've put in. I also do not see a video submission from you on Github or Teams, which is another aspect that you can look into for the third homework, since after reading your documentation, you have a general idea of what to do.
+Good solution. I would've liked to see you use .conf files for all the variables since these are easy points that you should be getting with all the work you've put in.
 Good job overall!
 
 Final Grade = 13%
